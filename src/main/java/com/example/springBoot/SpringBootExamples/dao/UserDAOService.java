@@ -2,6 +2,7 @@ package com.example.springBoot.SpringBootExamples.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ public class UserDAOService {
 		users.add(new UserBean(2, "Mark", new Date()));
 		users.add(new UserBean(3, "Steve", new Date()));
 		users.add(new UserBean(4, "Glenn", new Date()));
+		users.add(new UserBean(5, "Iasn", new Date()));
 
 	}
 
@@ -35,11 +37,27 @@ public class UserDAOService {
 
 	}
 
-	public void SaveUser(UserBean user) {
+	public UserBean SaveUser(UserBean user) {
 		if (user.getId() == 0) {
 			user.setId(++userCount);
 		}
 
 		users.add(user);
+		
+		return user;
+	}
+
+	public UserBean deletUser(int id) {
+		for (Iterator<UserBean> iterator = users.iterator(); iterator.hasNext();) {
+			UserBean userBean = (UserBean) iterator.next();
+			if(userBean.getId()==id){
+				iterator.remove();
+				
+				return userBean;
+			}
+			
+		}
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
