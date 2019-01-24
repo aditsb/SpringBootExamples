@@ -2,11 +2,18 @@ package com.example.springBoot.SpringBootExamples.model;
 
 import java.util.Date;
 
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
+
 public class UserBean {
 
 	// TODO Auto-generated constructor stub
 	private int id;
+	
+	@Size(min=2 , message="Name must be of 2 chars")
 	private String name;
+	
+	@Past 
 	private Date dateOfBirth;
 
 	public UserBean() {

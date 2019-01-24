@@ -3,7 +3,11 @@ package com.example.springBoot.SpringBootExamples.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,12 +28,16 @@ public class UserController {
 	public UserDAOService userDAO;
 
 	@GetMapping(path = "/user/{id}", produces = { "application/json" })
-	public UserBean getUser(@PathVariable int id) {
+	public Resource<UserBean> getUser(@PathVariable int id) {
 		UserBean savedUse= userDAO.findOne(id);
 		if(savedUse==null){
 			throw new UserNotFoundException("id-"+id);
 		}
-		return savedUse;
+		org.springframework.hateoas.Resource<UserBean> resource=new org.springframework.hateoas.Resource<UserBean>(savedUse);
+		
+		ControllerLinkBuilder controllerLinkBuilder= ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(this.getClass()).getUsers());
+		resource.add(controllerLinkBuilder.withRel("all-Users"));
+		return resource;
 	}
 
 	@GetMapping(path = "/user", produces = { "application/json" })
@@ -38,7 +46,7 @@ public class UserController {
 	}
 
 	@PostMapping(path = "/users")
-	public ResponseEntity<Object> createUser(@RequestBody UserBean user) {
+	public ResponseEntity<Object> createUser(@Valid @RequestBody UserBean user) {
 		UserBean savedUser=userDAO.SaveUser(user);
 		
 		URI uri= ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId()).toUri();
